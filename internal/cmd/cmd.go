@@ -7,15 +7,9 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-
-	"github.com/braam76/bullsh/internal/lua"
 )
 
-func ShellPrompt(conf *lua.Config) {
-	for envKey, val := range conf.ExportVars {
-		os.Setenv(envKey, val)
-	}
-
+func ShellPrompt() {
 	reader := bufio.NewReader(os.Stdin)
 
 	for {
@@ -27,13 +21,13 @@ func ShellPrompt(conf *lua.Config) {
 			continue
 		}
 
-		if err := execInput(input, conf.Aliases); err != nil {
+		if err := execInput(input); err != nil {
 			log.Println(err)
 		}
 	}
 }
 
-func execInput(input string, aliases map[string]string) error {
+func execInput(input string) error {
 	input = strings.TrimSpace(input)
 
 	if input == "" {
@@ -41,12 +35,6 @@ func execInput(input string, aliases map[string]string) error {
 	}
 
 	args := strings.Split(input, " ")
-
-	if command, exists := aliases[args[0]]; exists {
-		// Split the alias command into arguments
-		aliasArgs := strings.Fields(command)
-		args = append([]string{aliasArgs[0]}, aliasArgs[1:]...) // replace args with alias command
-	}
 
 	switch args[0] {
 	case "cd":
@@ -58,13 +46,6 @@ func execInput(input string, aliases map[string]string) error {
 	}
 
 	return nil
-}
-
-func cd(args []string) error {
-	if len(args) == 1 {
-		return os.Chdir(os.Getenv("HOME"))
-	}
-	return os.Chdir(args[1])
 }
 
 func runCommand(args []string) error {

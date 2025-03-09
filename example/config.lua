@@ -1,8 +1,6 @@
-local PS1 = os.getenv("USER") .. " $ "
-print(PS1)
 return {
 	export = {
-		PS1 = PS1,
+		PS1 = "\\u (\\w) $ ",
 	},
 	aliases = {
 		ll = "ls -la",
